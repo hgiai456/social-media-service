@@ -1,5 +1,7 @@
-package com.devteria.profile.dto.request;
+package com.devteria.identity.dto.request;
 
+import com.devteria.identity.validator.DobConstraint;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,5 +18,4 @@ public class ProfileCreationRequest {
     String lastName;
     LocalDate dob;
     String city;
-
 }
