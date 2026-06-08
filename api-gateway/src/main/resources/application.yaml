@@ -1,0 +1,26 @@
+server:
+  port: 8888
+#Need config that, it can replace all quickly
+app:
+  api-prefix: /api/v1
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: identity_service
+          uri: http://localhost:8080
+          #B?t ??u b?ng endpoint /identity
+          predicates:
+            - Path=${app.api-prefix}/identity/**
+          filters:
+            - StripPrefix=2
+        - id: profile_service
+          uri: http://localhost:8081
+          #B?t ??u b?ng endpoint /profile
+          predicates:
+            - Path=${app.api-prefix}/profile/users/**
+          filters:
+            - StripPrefix=2
+
