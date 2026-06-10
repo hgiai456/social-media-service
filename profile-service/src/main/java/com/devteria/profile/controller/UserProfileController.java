@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.apache.catalina.User;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class UserProfileController {
     }
 
     @GetMapping("/users")
-    List<UserProfileResponse> getProfile() //@PathVariable is params on url api link like(/al2k1jd - /id)
+    List<UserProfileResponse> getAllProfile() //@PathVariable is params on url api link like(/al2k1jd - /id)
     {
         return userProfileService.getProfiles();
     }
@@ -42,6 +43,8 @@ public class UserProfileController {
     UserProfileResponse updateProfile(@PathVariable String profileId, @RequestBody ProfileUpdateRequest request){
         return userProfileService.updateProfile(profileId, request);
     }
+
+
 
     @DeleteMapping("/users/{profileId}")
     String deleteProfile(@PathVariable String profileId){
