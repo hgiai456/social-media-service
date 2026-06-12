@@ -11,16 +11,22 @@ spring:
       routes:
         - id: identity_service
           uri: http://localhost:8080
-          #B?t ??u b?ng endpoint /identity
+          #Start with endpoint /identity
           predicates:
             - Path=${app.api-prefix}/identity/**
           filters:
             - StripPrefix=2
         - id: profile_service
           uri: http://localhost:8081
-          #B?t ??u b?ng endpoint /profile
+          #Start with endpoint /profile
           predicates:
             - Path=${app.api-prefix}/profile/users/**
+          filters:
+            - StripPrefix=2
+        - id: notification_service
+          uri: http://localhost:8082
+          predicates:
+            - Path=${app.api-prefix}/notification/**
           filters:
             - StripPrefix=2
 

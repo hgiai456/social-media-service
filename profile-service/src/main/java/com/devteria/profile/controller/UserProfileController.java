@@ -1,15 +1,14 @@
 package com.devteria.profile.controller;
 
+import com.devteria.profile.dto.ApiResponse;
 import com.devteria.profile.dto.request.ProfileCreationRequest;
 import com.devteria.profile.dto.request.ProfileUpdateRequest;
 import com.devteria.profile.dto.response.UserProfileResponse;
 import com.devteria.profile.service.UserProfileService;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.apache.catalina.User;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,39 +17,47 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)//Không khai báo thì mặc định là private,
 // Access Modifiers(bộ điều khiển truy cập), dùng để quy định phạm vi truy cập của biến và phương thức
-
+@Builder
 public class UserProfileController {
     UserProfileService userProfileService;
 
     @PostMapping("/users")
-    UserProfileResponse createProfile(@RequestBody ProfileCreationRequest request){
-        return userProfileService.createProfile(request);
+    ApiResponse<UserProfileResponse>  createProfile(@RequestBody ProfileCreationRequest request){
+        return  ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.createProfile(request))
+                .build();
     }
 
     @GetMapping("/users/{profileId}")
-    UserProfileResponse getProfile(@PathVariable String profileId) //@PathVariable is params on url api link like(/al2k1jd - /id)
+    ApiResponse<UserProfileResponse>  getProfile(@PathVariable String profileId) //@PathVariable is params on url api link like(/al2k1jd - /id)
     {
-        return userProfileService.getProfile(profileId);
+        return  ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.getProfile(profileId))
+                .build();
     }
 
     @GetMapping("/users")
-    List<UserProfileResponse> getAllProfile() //@PathVariable is params on url api link like(/al2k1jd - /id)
+    ApiResponse<List<UserProfileResponse>>  getAllProfile() //@PathVariable is params on url api link like(/al2k1jd - /id)
     {
-        return userProfileService.getProfiles();
+        return  ApiResponse.<List<UserProfileResponse>>builder()
+                .result(userProfileService.getProfiles())
+                .build();
+
     }
 
     @PutMapping("/users/{profileId}")
-    UserProfileResponse updateProfile(@PathVariable String profileId, @RequestBody ProfileUpdateRequest request){
-        return userProfileService.updateProfile(profileId, request);
+    ApiResponse<UserProfileResponse>  updateProfile(@PathVariable String profileId, @RequestBody ProfileUpdateRequest request){
+        return  ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.updateProfile(profileId, request))
+                .build();
     }
-
 
 
     @DeleteMapping("/users/{profileId}")
-    String deleteProfile(@PathVariable String profileId){
+    ApiResponse<String>  deleteProfile(@PathVariable String profileId){
          userProfileService.deleteProfile(profileId);
-         return "User has been deleted";
+         return ApiResponse.<String>builder()
+                 .message("User has been deleted")
+                 .build();
     }
-
-
 }
