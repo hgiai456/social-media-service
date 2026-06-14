@@ -7,6 +7,7 @@ import com.devteria.identity.mapper.ProfileMapper;
 import com.devteria.identity.repository.httpclient.ProfileClient;
 import jakarta.servlet.Servlet;
 import jakarta.servlet.ServletRequestAttributeListener;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -43,6 +44,7 @@ public class UserService {
     ProfileClient profileClient;
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
+    KafkaTemplate<String, String> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
@@ -55,12 +57,15 @@ public class UserService {
 
         user.setRoles(roles);
 
-        user = userRepository.save(user);
-        var profileRequest = profileMapper.toProfileCreationRequest(request);
+        user = userRepository.save(user); //Save user to database
+        var profileRequest = profileMapper.toProfileCreationRequest(request); //Map from UserCreationRequest to ProfileCreationRequest
 
         profileRequest.setUserId(user.getId());
 
         profileClient.createProfile(profileRequest);
+
+        //public message to kafka
+        kafkaTemplate.send("onboard-successful", "Welcome our new member" + user.getUsername());
 
         return userMapper.toUserResponse(user);
     }

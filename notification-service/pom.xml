@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.devteria</groupId>
-	<artifactId>service-notification</artifactId>
+	<artifactId>notification-service</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>service-notification</name>
+	<name>notification-service</name>
 	<description>Notification service</description>
 	<properties>
 		<java.version>21</java.version>

@@ -26,6 +26,7 @@ public class EmailService {
     @NonFinal
     @Value("${brevo.api-key}")
     String apiKey = "";
+
     public EmailResponse sendEmail(SendEmailRequest request){
         EmailRequest emailRequest = EmailRequest.builder()
                 .sender(Sender.builder()
