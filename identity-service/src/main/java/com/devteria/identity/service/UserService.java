@@ -65,7 +65,8 @@ public class UserService {
         profileClient.createProfile(profileRequest);
 
         //public message to kafka
-        kafkaTemplate.send("onboard-successful", "Welcome our new member" + user.getUsername());
+        kafkaTemplate.send("onboard-successful", "Welcome our new member " + user.getUsername())
+                ;
 
         return userMapper.toUserResponse(user);
     }
