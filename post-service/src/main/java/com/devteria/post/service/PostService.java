@@ -1,0 +1,55 @@
+package com.devteria.post.service;
+
+import com.devteria.post.dto.request.PostRequest;
+import com.devteria.post.dto.response.PostResponse;
+import com.devteria.post.entity.Post;
+import com.devteria.post.mapper.PostMapper;
+import com.devteria.post.repository.PostRepository;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class PostService {
+    PostRepository postRepository;
+    PostMapper postMapper;
+
+    //Almost Services are public access to Controller use
+    public PostResponse createPost(PostRequest request){
+      Authentication authentication = SecurityContextHolder.getContext().getAuthentication(); //Get user when logging in
+
+       var subject = authentication.getName(); //When user logging in, Security map (getName = subject(be set userId)) subject in JWT token
+
+      Post post = Post.builder()
+                .content(request.getContent())
+                .userId(subject)
+                .createdDate(Instant.now()) //Current Time
+                .modifiedDate(Instant.now())
+                .build();
+
+      post = postRepository.save(post);
+
+      return postMapper.toPostResponse(post);
+    }
+
+    public List<PostResponse> getMyPosts(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String userId = authentication.getName();
+
+        //Method Stream help us List<Post> => Stream<Post> => List<PostResponse>
+        return postRepository.findAllByUserId(userId)
+                .stream()
+                .map(postMapper::toPostResponse)
+                .toList();
+
+    }
+}

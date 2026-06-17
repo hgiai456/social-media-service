@@ -11,8 +11,10 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfileUpdateRequest {
-    String firstName;
+    String username;
+    String email;
     String lastName;
+    String firstName;
     LocalDate dob;
     String city;
 }

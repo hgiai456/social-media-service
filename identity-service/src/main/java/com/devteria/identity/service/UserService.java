@@ -6,8 +6,6 @@ import java.util.List;
 import com.devteria.event.dto.NotificationEvent;
 import com.devteria.identity.mapper.ProfileMapper;
 import com.devteria.identity.repository.httpclient.ProfileClient;
-import jakarta.servlet.Servlet;
-import jakarta.servlet.ServletRequestAttributeListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -59,6 +57,7 @@ public class UserService {
         user.setRoles(roles);
 
         user = userRepository.save(user); //Save user to database
+        
         var profileRequest = profileMapper.toProfileCreationRequest(request); //Map from UserCreationRequest to ProfileCreationRequest
 
         profileRequest.setUserId(user.getId());
