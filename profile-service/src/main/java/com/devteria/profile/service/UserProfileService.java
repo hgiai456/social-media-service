@@ -4,6 +4,8 @@ import com.devteria.profile.dto.request.ProfileCreationRequest;
 import com.devteria.profile.dto.request.ProfileUpdateRequest;
 import com.devteria.profile.dto.response.UserProfileResponse;
 import com.devteria.profile.entity.UserProfile;
+import com.devteria.profile.exception.AppException;
+import com.devteria.profile.exception.ErrorCode;
 import com.devteria.profile.mapper.UserProfileMapper;
 import com.devteria.profile.repository.UserProfileRepository;
 import lombok.AccessLevel;
@@ -54,10 +56,18 @@ public class UserProfileService {
 
     public UserProfileResponse updateProfile(String id ,ProfileUpdateRequest request){
         UserProfile user = userProfileRepository.findById(id).orElseThrow(()
-                -> new RuntimeException("User isn't exist."));
+                -> new AppException(ErrorCode.USER_EXISTED));
         userProfileMapper.updateProfile(user, request);
 
         return userProfileMapper.toUserProfileResponse(userProfileRepository.save(user));
+    }
+
+    public UserProfileResponse getByUserId(String userId){
+    UserProfile userProfile = userProfileRepository.findByUserId(userId).orElseThrow(()
+            -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+    return userProfileMapper.toUserProfileResponse(userProfile);
+
     }
 
     public void deleteProfile(String id){
