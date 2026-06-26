@@ -8,12 +8,15 @@ import com.devteria.profile.exception.AppException;
 import com.devteria.profile.exception.ErrorCode;
 import com.devteria.profile.mapper.UserProfileMapper;
 import com.devteria.profile.repository.UserProfileRepository;
+import com.devteria.profile.repository.httpclient.FileClient;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -23,7 +26,7 @@ import java.util.List;
 @Slf4j
 public class UserProfileService {
     UserProfileRepository userProfileRepository;
-
+    FileClient fileClient;
     UserProfileMapper userProfileMapper;
 
     public UserProfileResponse createProfile(ProfileCreationRequest request){
@@ -61,6 +64,46 @@ public class UserProfileService {
 
         return userProfileMapper.toUserProfileResponse(userProfileRepository.save(user));
     }
+
+    public UserProfileResponse getMyProfile(){
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        log.info("Get user by Security Context: {}", userId);
+
+        UserProfile profile = userProfileRepository.findByUserId(userId).orElseThrow(()
+                -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userProfileMapper.toUserProfileResponse(profile);
+
+    }
+
+    public UserProfileResponse updateMyProfile(ProfileUpdateRequest request){
+
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        UserProfile user = userProfileRepository.findByUserId(userId).orElseThrow(()
+                -> new AppException(ErrorCode.USER_EXISTED));
+
+        userProfileMapper.updateProfile(user, request);
+
+        return userProfileMapper.toUserProfileResponse(userProfileRepository.save(user));
+    }
+
+    public UserProfileResponse updateAvatar(MultipartFile file){
+
+        String userId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        UserProfile profile = userProfileRepository.findByUserId(userId).orElseThrow(()
+                -> new AppException(ErrorCode.USER_EXISTED));
+
+        var response = fileClient.uploadMedia(file);
+
+        profile.setAvatar(response.getResult().getUrl());
+        //Upload file - invoke an api File Service
+
+        return userProfileMapper.toUserProfileResponse(userProfileRepository.save(profile));
+    }
+
 
     public UserProfileResponse getByUserId(String userId){
     UserProfile userProfile = userProfileRepository.findByUserId(userId).orElseThrow(()

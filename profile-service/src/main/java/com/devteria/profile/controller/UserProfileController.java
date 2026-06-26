@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -45,6 +46,26 @@ public class UserProfileController {
 
     }
 
+    @GetMapping("/users/my-profile")
+    ApiResponse<UserProfileResponse>  getMyProfile() //@PathVariable is params on url api link like(/al2k1jd - /id)
+    {
+        return  ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.getMyProfile())
+                .build();
+
+    }
+
+
+
+    @PutMapping("/users/my-profile")
+    ApiResponse<UserProfileResponse>  updateMyProfile(@RequestBody ProfileUpdateRequest request) //@PathVariable is params on url api link like(/al2k1jd - /id)
+    {
+        return  ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.updateMyProfile(request))
+                .build();
+
+    }
+
     @PutMapping("/users/{profileId}")
     ApiResponse<UserProfileResponse>  updateProfile(@PathVariable String profileId, @RequestBody ProfileUpdateRequest request){
         return  ApiResponse.<UserProfileResponse>builder()
@@ -57,7 +78,19 @@ public class UserProfileController {
     ApiResponse<String>  deleteProfile(@PathVariable String profileId){
          userProfileService.deleteProfile(profileId);
          return ApiResponse.<String>builder()
-                 .message("User has been deleted")
+                 .message("Profile has been deleted")
                  .build();
     }
+
+    @PutMapping("/users/avatar")
+    ApiResponse<UserProfileResponse>  updateAvatar(@RequestParam("file")MultipartFile file) //@PathVariable is params on url api link like(/al2k1jd - /id)
+    {
+        return  ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.updateAvatar(file))
+                .build();
+
+    }
+
+
+
 }

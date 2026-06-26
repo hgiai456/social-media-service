@@ -1,12 +1,16 @@
 package com.giaidev.fileservice.service;
 
+import com.giaidev.fileservice.dto.response.FileData;
 import com.giaidev.fileservice.dto.response.FileResponse;
+import com.giaidev.fileservice.exception.AppException;
+import com.giaidev.fileservice.exception.ErrorCode;
 import com.giaidev.fileservice.mapper.FileMgmtMapper;
 import com.giaidev.fileservice.repository.FileMgmtRepository;
 import com.giaidev.fileservice.repository.FileRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.io.Resource;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,5 +42,14 @@ public class FileService {
                 .originalFileName(file.getOriginalFilename())
                 .url(fileInfo.getUrl())
                 .build();
+    }
+
+    public FileData download(String fileName) throws IOException {
+        var fileMgmt = fileMgmtRepository.findById(fileName).orElseThrow(
+                () -> new AppException(ErrorCode.FILE_NOT_FOUND));
+
+        var resource = fileRepository.read(fileMgmt);
+
+        return new FileData(fileMgmt.getContentType(), resource);
     }
 }
