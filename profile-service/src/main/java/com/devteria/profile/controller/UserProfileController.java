@@ -3,6 +3,7 @@ package com.devteria.profile.controller;
 import com.devteria.profile.dto.ApiResponse;
 import com.devteria.profile.dto.request.ProfileCreationRequest;
 import com.devteria.profile.dto.request.ProfileUpdateRequest;
+import com.devteria.profile.dto.request.SearchUserRequest;
 import com.devteria.profile.dto.response.UserProfileResponse;
 import com.devteria.profile.service.UserProfileService;
 import lombok.AccessLevel;
@@ -88,7 +89,13 @@ public class UserProfileController {
         return  ApiResponse.<UserProfileResponse>builder()
                 .result(userProfileService.updateAvatar(file))
                 .build();
+    }
 
+    @PostMapping("/users/search")
+    ApiResponse<List<UserProfileResponse>> search(@RequestBody SearchUserRequest request){
+        return ApiResponse.<List<UserProfileResponse>>builder()
+                .result(userProfileService.search(request))
+                .build();
     }
 
 

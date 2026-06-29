@@ -1,24 +1,18 @@
-package com.devteria.profile.dto.response;
+package com.giaidev.chatservice.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-
-@Data
+@Setter
+@Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserProfileResponse {
-    String id;
+public class ParticipantInfo {
     String userId;
     String username;
-    String avatar;
-    String email;
     String firstName;
     String lastName;
-    LocalDate dob;
-    String city;
-
+    String avatar;
 }
