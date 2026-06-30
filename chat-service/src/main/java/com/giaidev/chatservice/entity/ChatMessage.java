@@ -16,16 +16,16 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ChatMessage {
     @MongoId
-    String id;
+    String id; //Chat Message id
 
     @Indexed
-    String conversationId;
+    String conversationId; //This chat message belong to what conversation
 
-    String message;
+    String message; //Content of message
 
-    ParticipantInfo sender;
+    ParticipantInfo sender; //Object save participants join to the conversation
 
     @Indexed
-    Instant createdDate;
+    Instant createdDate; //Created Date
 
 }

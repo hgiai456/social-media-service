@@ -29,7 +29,6 @@ import java.util.StringJoiner;
 public class ConversationService {
     ConversationRepository conversationRepository;
     ProfileClient profileClient;
-
     ConversationMapper conversationMapper;
 
     public List<ConversationResponse> myConversations() {
@@ -60,33 +59,40 @@ public class ConversationService {
         var sortedIds = userIds.stream().sorted().toList();
         String userIdHash = generateParticipantHash(sortedIds);
 
-        List<ParticipantInfo> participantInfos = List.of(
-                ParticipantInfo.builder()
-                        .userId(userInfo.getUserId())
-                        .username(userInfo.getUsername())
-                        .firstName(userInfo.getFirstName())
-                        .lastName(userInfo.getLastName())
-                        .avatar(userInfo.getAvatar())
-                        .build(),
-                ParticipantInfo.builder()
-                        .userId(participantInfo.getUserId())
-                        .username(participantInfo.getUsername())
-                        .firstName(participantInfo.getFirstName())
-                        .lastName(participantInfo.getLastName())
-                        .avatar(participantInfo.getAvatar())
-                        .build()
-        );
+        var conversation = conversationRepository.findByParticipantsHash(userIdHash)
+                //Check Conversation in DB by Hash
+                // => If it's existed conversation return this conversation
+                // => Else Create new conversation
+                .orElseGet(() -> {
+                    List<ParticipantInfo> participantInfos = List.of(
+                            ParticipantInfo.builder()
+                                    .userId(userInfo.getUserId())
+                                    .username(userInfo.getUsername())
+                                    .firstName(userInfo.getFirstName())
+                                    .lastName(userInfo.getLastName())
+                                    .avatar(userInfo.getAvatar())
+                                    .build(),
+                            ParticipantInfo.builder()
+                                    .userId(participantInfo.getUserId())
+                                    .username(participantInfo.getUsername())
+                                    .firstName(participantInfo.getFirstName())
+                                    .lastName(participantInfo.getLastName())
+                                    .avatar(participantInfo.getAvatar())
+                                    .build()
+                    );
 
-        // Build conversation info
-        Conversation conversation = Conversation.builder()
-                .type(request.getType())
-                .participantsHash(userIdHash)
-                .createdDate(Instant.now())
-                .modifiedDate(Instant.now())
-                .participants(participantInfos)
-                .build();
+                    // Build conversation info
+                    Conversation newConversation = Conversation.builder()
+                            .type(request.getType())
+                            .participantsHash(userIdHash)
+                            .createdDate(Instant.now())
+                            .modifiedDate(Instant.now())
+                            .participants(participantInfos)
+                            .build();
 
-        conversation = conversationRepository.save(conversation);
+                    return  conversationRepository.save(newConversation);
+                });
+
 
         return toConversationResponse(conversation);
     }
@@ -94,9 +100,6 @@ public class ConversationService {
     private String generateParticipantHash(List<String> ids) {
         StringJoiner stringJoiner = new StringJoiner("_");
         ids.forEach(stringJoiner::add);
-
-        // SHA 256
-
         return stringJoiner.toString();
     }
 
