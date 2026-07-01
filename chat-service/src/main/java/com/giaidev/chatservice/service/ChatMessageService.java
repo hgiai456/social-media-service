@@ -1,5 +1,6 @@
 package com.giaidev.chatservice.service;
 
+import com.corundumstudio.socketio.SocketIOServer;
 import com.giaidev.chatservice.dto.request.ChatMessageRequest;
 import com.giaidev.chatservice.dto.request.ConversationRequest;
 import com.giaidev.chatservice.dto.response.ChatMessageResponse;
@@ -37,6 +38,7 @@ public class ChatMessageService {
     ConversationRepository conversationRepository;
     ProfileClient profileClient;
     ChatMessageMapper chatMessageMapper;
+    SocketIOServer socketIOServer;
 
     public List<ChatMessageResponse> getMessages(String conversationId) {
         //Validate conversationId
@@ -89,6 +91,13 @@ public class ChatMessageService {
 
         //Create chat message
         chatMessage = chatMessageRepository.save(chatMessage);
+        String message = chatMessage.getMessage();
+
+        //Publish socket event to clients
+        socketIOServer.getAllClients().forEach(client -> {
+            client.sendEvent("message", message);
+        });
+
 
         //Convert to Response
         return toChatMessageResponse(chatMessage);
