@@ -2,6 +2,7 @@ package com.devteria.identity.service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 
 import com.devteria.event.dto.NotificationEvent;
 import com.devteria.identity.mapper.ProfileMapper;
@@ -49,7 +50,12 @@ public class UserService {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
 
         User user = userMapper.toUser(request);
+
+        if (Objects.isNull(user.getEmail()))
+            throw new AppException(ErrorCode.EMAIL_EXIST);
+
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+
 
         HashSet<Role> roles = new HashSet<>();
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);

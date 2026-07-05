@@ -1,5 +1,6 @@
 package com.giaidev.chatservice.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.giaidev.chatservice.dto.ApiResponse;
 import com.giaidev.chatservice.dto.request.ChatMessageRequest;
 import com.giaidev.chatservice.dto.response.ChatMessageResponse;
@@ -27,7 +28,7 @@ public class ChatMessageController {
     }
 
     @PostMapping("/create")
-    ApiResponse<ChatMessageResponse> createMessage(@RequestBody @Valid ChatMessageRequest request) {
+    ApiResponse<ChatMessageResponse> createMessage(@RequestBody @Valid ChatMessageRequest request) throws JsonProcessingException {
         return ApiResponse.<ChatMessageResponse>builder()
                 .result(chatMessageService.create(request))
                 .build();

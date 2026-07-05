@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import jakarta.validation.ConstraintViolation;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,14 +23,14 @@ public class GlobalExceptionHandler {
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
+    ResponseEntity<ApiResponse> handlingException(Exception exception) {
         log.error("Exception: ", exception);
-        ApiResponse apiResponse = new ApiResponse();
 
-        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
-
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.builder()
+                        .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
+                        .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
+                        .build());
     }
 
     @ExceptionHandler(value = AppException.class)
@@ -51,6 +52,17 @@ public class GlobalExceptionHandler {
                 .body(ApiResponse.builder()
                         .code(errorCode.getCode())
                         .message(errorCode.getMessage())
+                        .build());
+    }
+
+    @ExceptionHandler(value = DataIntegrityViolationException.class)
+    ResponseEntity<ApiResponse> handlingDataIntegrity(DataIntegrityViolationException e) {
+
+
+        return ResponseEntity.status(ErrorCode.EMAIL_EXIST.getStatusCode())
+                .body(ApiResponse.builder()
+                        .code(ErrorCode.EMAIL_EXIST.getCode())
+                        .message(ErrorCode.EMAIL_EXIST.getMessage())
                         .build());
     }
 

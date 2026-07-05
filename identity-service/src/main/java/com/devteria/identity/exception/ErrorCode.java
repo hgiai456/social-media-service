@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(1009, "Your email is not valid", HttpStatus.BAD_REQUEST),
     EMAIL_IS_REQUIRED(1010, "Email is required", HttpStatus.BAD_REQUEST),
+    EMAIL_EXIST(1011, "Email is existed", HttpStatus.BAD_REQUEST)
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
