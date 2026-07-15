@@ -37,5 +37,14 @@ public class FileController {
                 .body(fileData.resource());
     }
 
+    @DeleteMapping("/media/{fileName}")
+    ApiResponse<Void> deleteMedia(@PathVariable String fileName){
+        fileService.deleteFile(fileName);
+
+        return ApiResponse.<Void>builder()
+                .message("File deleted successfully")
+                .build();
+    }
+
 
 }

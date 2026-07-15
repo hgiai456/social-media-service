@@ -7,7 +7,7 @@ spring:
     name: file-service
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/post-service?authSource=admin
+      uri: mongodb://root:root@localhost:27017/file-service?authSource=admin
   servlet:
     multipart:
       max-file-size: 5MB
@@ -17,3 +17,8 @@ app:
   file:
     storage-dir: C:/upload
     download-prefix: http://localhost:8888/api/v1/file/media/download/
+  s3:
+    bucket: ${AWS_S3_BUCKET}
+    region: ${AWS_REGION:ap-northeast-1}
+    presigned-url-duration: ${AWS_S3_PRESIGNED_URL_DURATION:10m}
+

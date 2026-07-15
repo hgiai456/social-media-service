@@ -22,18 +22,19 @@ public class GlobalExceptionHandler {
     //if Almost Exception is not included this error
     // => return internal exception (UNCATEGORIZED_EXCEPTION - 9999)
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse<?>> handlingRuntimeException(RuntimeException exception) {
+    ResponseEntity<ApiResponse<?>> handlingRuntimeException(Exception exception) {
+        log.error("Unhandled exception in File Service", exception);
+
+            ErrorCode errorCode = ErrorCode.UNCATEGORIZED_EXCEPTION;
 
             ApiResponse<?> apiResponse = ApiResponse.builder()
-                    .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
-                    .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
+                    .code(errorCode.getCode())
+                    .message(errorCode.getMessage())
                     .build();
 
-            //        ApiResponse apiResponse = new ApiResponse();
-//        apiResponse.setCode(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode());
-//        apiResponse.setMessage(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage());
-
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity
+                .status(errorCode.getStatusCode())
+                .body(apiResponse);
     }
 
     @ExceptionHandler(value = AppException.class)
